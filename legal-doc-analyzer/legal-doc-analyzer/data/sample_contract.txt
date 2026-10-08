@@ -1,0 +1,11 @@
+SERVICE AGREEMENT
+This Service Agreement is made on 1 October 2026 between Veda Technologies Pvt. Ltd., Hyderabad (the "Service Provider") and Nila Retail LLP, Bengaluru (the "Client").
+1. Services. The Service Provider shall deliver the software development services described in Schedule A by 31 December 2026.
+2. Payment. The Client shall pay a fee of ₹12,50,000 in three instalments. Invoices must be paid within 15 days of receipt. Late payments will attract a penalty of 2% per month.
+3. Confidentiality. Each party shall keep all Confidential Information secret and must not disclose it to any third party for 5 years after termination.
+4. Intellectual Property. All work product shall be owned by the Client upon full payment, and the Service Provider irrevocably waives all moral rights.
+5. Liability. The Service Provider's liability under this Agreement shall be unlimited, and the Service Provider shall indemnify the Client against all losses, claims and expenses.
+6. Term and Renewal. This Agreement runs for 12 months and shall automatically renew for successive 12-month terms unless cancelled in writing 60 days before expiry.
+7. Termination. The Client may terminate this Agreement at its sole discretion without notice. The Service Provider may terminate only for material breach with 30 days' written notice.
+8. Non-Compete. The Service Provider shall not provide similar services to any competitor of the Client for 24 months.
+9. Governing Law. This Agreement is governed by the laws of India, and disputes shall be subject to the exclusive jurisdiction of the courts of Hyderabad, Telangana.

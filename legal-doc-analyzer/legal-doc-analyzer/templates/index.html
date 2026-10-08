@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clausely – Intelligent Legal Document Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f6;--sf:#fff;--ink:#14183a;--mu:#5b6283;--ln:#d9deea;--br:#3b3fd8;--brt:#fff;--hl:.16;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1022;--sf:#171b36;--ink:#e8eaf8;--mu:#9aa1c8;--ln:#2a2f55;--br:#8b8fff;--brt:#0d1022;--hl:.3}}
+:root[data-theme="dark"]{--bg:#0d1022;--sf:#171b36;--ink:#e8eaf8;--mu:#9aa1c8;--ln:#2a2f55;--br:#8b8fff;--brt:#0d1022;--hl:.3}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:Newsreader,Georgia,serif;font-weight:600;margin:0;line-height:1.1}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden;color:#eef0ff;background:radial-gradient(120% 90% at 75% 40%,#2a2f8f 0%,#12163f 55%,#0a0c26 100%)}
+#scene{position:absolute;inset:0;width:100%;height:100%}
+.hero .in{position:relative;max-width:1100px;margin:0 auto;padding:96px 24px;width:100%}
+.hero h1{font-size:clamp(2.6rem,7vw,5.2rem);max-width:11ch;letter-spacing:-.02em}
+.hero p{max-width:46ch;font-size:1.15rem;color:#c5caf0;margin:22px 0 32px}
+.btn{display:inline-block;border:0;border-radius:10px;padding:13px 22px;font-weight:600;text-decoration:none;background:#fff;color:#14183a}
+.btn.ghost{background:transparent;color:#eef0ff;border:1px solid #6d73d9;margin-left:10px}
+.btn.pri{background:var(--br);color:var(--brt)}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--ln)}
+main{max-width:1100px;margin:0 auto;padding:72px 20px}
+.sec-h{margin-bottom:28px}.sec-h h2{font-size:clamp(1.8rem,4vw,2.6rem)}.sec-h p{color:var(--mu);margin:8px 0 0;max-width:60ch}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:20px}
+.io{display:grid;grid-template-columns:1fr;gap:18px}
+#drop{border:2px dashed var(--ln);border-radius:12px;padding:16px;text-align:center;color:var(--mu);transition:.2s}
+#drop.on{border-color:var(--br);background:rgba(99,102,241,.08)}
+textarea{width:100%;min-height:230px;margin-top:12px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);color:var(--ink);padding:14px;font:14px/1.6 ui-monospace,Menlo,monospace;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+#msg{color:var(--mu);font-size:.9rem}
+#pipe{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+#pipe span{padding:5px 12px;border-radius:99px;border:1px solid var(--ln);color:var(--mu);font-size:.85rem;transition:.25s}
+#pipe span.on{background:var(--br);border-color:var(--br);color:var(--brt)}
+#res{margin-top:28px;display:none}
+.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.gauge{display:flex;align-items:center;gap:18px}
+.gauge b{font:600 2rem Newsreader,serif;display:block}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.stats div{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stats b{display:block;font:600 1.4rem Newsreader,serif}.stats small{color:var(--mu)}
+.sum li{margin:0 0 10px}.sum ul{padding-left:18px;margin:10px 0 0}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:26px 0 14px}
+.tabs button{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:9px 16px;border-radius:99px}
+.tabs button[aria-selected=true]{background:var(--br);border-color:var(--br);color:var(--brt)}
+.item{border-top:1px solid var(--ln);padding:12px 0}.item:first-child{border-top:0}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;padding:2px 10px;border-radius:99px;margin-right:8px;background:var(--bg);border:1px solid var(--ln)}
+.tag.h{background:#ef4444;color:#fff;border-color:#ef4444}.tag.m{background:#f59e0b;color:#1b1300;border-color:#f59e0b}.tag.l{background:#38bdf8;color:#00202e;border-color:#38bdf8}
+.item q{display:block;color:var(--mu);font-size:.92rem;margin-top:4px;quotes:none}
+.chips span{display:inline-block;margin:4px 6px 4px 0}
+mark{color:inherit;border-radius:4px;padding:1px 3px}
+.t-party{background:rgba(20,184,166,var(--hl))}.t-date{background:rgba(245,158,11,var(--hl))}.t-money{background:rgba(34,197,94,var(--hl))}.t-term{background:rgba(139,92,246,var(--hl))}.t-place{background:rgba(14,165,233,var(--hl))}
+.t-risk{background:none;text-decoration:underline wavy #ef4444;text-underline-offset:3px}
+.doc{white-space:pre-wrap;line-height:1.9;max-height:420px;overflow:auto;font-family:Newsreader,Georgia,serif;font-size:1.05rem}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:.85rem}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.steps .panel b{font:600 1.25rem Newsreader,serif;display:block;margin-bottom:6px}.steps p{margin:0;color:var(--mu);font-size:.95rem}
+footer{padding:36px 20px 56px;text-align:center;color:var(--mu);font-size:.9rem;max-width:70ch;margin:0 auto}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="in">
+<h1>Read the fine print in seconds.</h1>
+<p>Upload a contract or paste its text. Clausely pulls out the parties, dates, key clauses, obligations and risky wording, then writes a short summary.</p>
+<a class="btn" href="#analyzer">Analyze a document</a><a class="btn ghost" href="#analyzer" id="heroSample">Try the sample contract</a>
+</div>
+</header>
+<main>
+<section id="analyzer">
+<div class="sec-h"><h2>Analyzer</h2><p>Text is analyzed by the Python backend running on your own machine.</p></div>
+<div class="panel io">
+<div>
+<div id="drop"><label for="file">Drop a .txt, .pdf or .docx file here, or <u>choose a file</u></label> <input type="file" id="file" accept=".txt,.md,.pdf,.docx" hidden>
+<div style="font-size:.85rem;margin-top:4px">Or paste the text below.</div></div>
+<textarea id="txt" placeholder="Paste the contract text here…" aria-label="Legal document text"></textarea>
+<div class="row"><button class="btn pri" id="go">Analyze document</button><button class="btn sec" id="sample">Load sample</button><button class="btn sec" id="clear">Clear</button><span id="msg" role="status"></span></div>
+<div id="pipe" aria-hidden="true"></div>
+</div>
+</div>
+<div id="res">
+<div class="top">
+<div class="panel"><div class="gauge"><svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Risk score"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ln)" stroke-width="10"/><circle id="arc" cx="60" cy="60" r="52" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 327" transform="rotate(-90 60 60)" style="transition:stroke-dasharray .9s"/></svg>
+<div><b id="score">0</b><span id="level" style="color:var(--mu)"></span></div></div>
+<div class="stats" id="stats"></div></div>
+<div class="panel sum"><h3>Summary</h3><ul id="sum"></ul></div>
+</div>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div class="panel" id="panel" role="tabpanel"></div>
+<div class="panel" style="margin-top:18px"><h3 style="margin-bottom:12px">Highlighted document</h3>
+<div class="leg"><mark class="t-party">Party</mark><mark class="t-date">Date</mark><mark class="t-money">Amount</mark><mark class="t-term">Duration</mark><mark class="t-place">Law / place</mark><mark class="t-risk">Risk wording</mark></div>
+<div class="doc" id="doc"></div>
+<div class="row"><button class="btn sec" id="copy">Copy report</button></div></div>
+</div>
+</section>
+<section style="margin-top:80px">
+<div class="sec-h"><h2>How it works</h2><p>Four stages turn a long document into something you can review in a minute.</p></div>
+<div class="steps">
+<div class="panel"><b>1. Clean and split</b><p>NLTK splits the text into sentences, keeping abbreviations like “Pvt. Ltd.” intact.</p></div>
+<div class="panel"><b>2. Extract</b><p>spaCy named entities plus regex rules find parties, dates, amounts, durations and governing law.</p></div>
+<div class="panel"><b>3. Classify and flag</b><p>A scikit-learn TF-IDF classifier labels each clause, and rules flag risky wording such as unlimited liability.</p></div>
+<div class="panel"><b>4. Summarize</b><p>TF-IDF ranks the most informative sentences. A Hugging Face model can add an abstractive summary.</p></div>
+</div>
+</section>
+</main>
+<footer>Built with Flask, spaCy, NLTK, scikit-learn, Pandas and Hugging Face Transformers. A study aid, not legal advice.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SAMPLE=`SERVICE AGREEMENT
+This Service Agreement is made on 1 October 2026 between Veda Technologies Pvt. Ltd., Hyderabad (the "Service Provider") and Nila Retail LLP, Bengaluru (the "Client").
+1. Services. The Service Provider shall deliver the software development services described in Schedule A by 31 December 2026.
+2. Payment. The Client shall pay a fee of ₹12,50,000 in three instalments. Invoices must be paid within 15 days of receipt. Late payments will attract a penalty of 2% per month.
+3. Confidentiality. Each party shall keep all Confidential Information secret and must not disclose it to any third party for 5 years after termination.
+4. Intellectual Property. All work product shall be owned by the Client upon full payment, and the Service Provider irrevocably waives all moral rights.
+5. Liability. The Service Provider's liability under this Agreement shall be unlimited, and the Service Provider shall indemnify the Client against all losses, claims and expenses.
+6. Term and Renewal. This Agreement runs for 12 months and shall automatically renew for successive 12-month terms unless cancelled in writing 60 days before expiry.
+7. Termination. The Client may terminate this Agreement at its sole discretion without notice. The Service Provider may terminate only for material breach with 30 days' written notice.
+8. Non-Compete. The Service Provider shall not provide similar services to any competitor of the Client for 24 months.
+9. Governing Law. This Agreement is governed by the laws of India, and disputes shall be subject to the exclusive jurisdiction of the courts of Hyderabad, Telangana.`;
+
+const M='(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?';
+const ENT=[
+['date',new RegExp(`\\b\\d{1,2}(?:st|nd|rd|th)?\\s+${M},?\\s+\\d{4}\\b|\\b${M}\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}\\b|\\b\\d{1,2}[\\/.-]\\d{1,2}[\\/.-]\\d{2,4}\\b|\\b\\d{4}-\\d{2}-\\d{2}\\b`,'gi')],
+['money',/(?:₹|\$|€|£|Rs\.?|INR|USD)\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:lakh|crore|million|billion))?|\b\d+(?:\.\d+)?\s?%/gi],
+['term',/\b\d+(?:-|\s)(?:day|week|month|year)s?(?:'s)?/gi],
+['place',/\b(?:laws of|courts of|jurisdiction of)\s+(?:the\s+)?(?:State of\s+)?[A-Z][a-zA-Z]+(?:,?\s+[A-Z][a-zA-Z]+)?/g],
+['party',/\b[A-Z][\w&'’-]*(?:\s+[A-Z][\w&'’-]*){0,4}\s+(?:Pvt\.?\s+Ltd\.?|Private Limited|Limited|Ltd\.?|LLP|LLC|Inc\.?|Corp\.?|Corporation|Company)/g]
+];
+const LABEL={party:'Parties',date:'Dates',money:'Amounts',term:'Durations',place:'Law and place'};
+const CLAUSES={
+'Payment':/\b(pay|payment|fee|invoice|instalment|remuneration)\b/i,
+'Termination':/\b(terminat|cancel)/i,
+'Confidentiality':/\b(confidential|disclos|non-disclosure)/i,
+'Liability':/\b(liabilit|damages|losses)\b/i,
+'Indemnity':/\bindemnif/i,
+'Intellectual property':/\b(intellectual property|work product|copyright|moral rights)\b/i,
+'Governing law':/\b(governed by|governing law|laws of)\b/i,
+'Dispute resolution':/\b(jurisdiction|arbitrat|dispute)/i,
+'Non-compete':/\b(non-?compete|competitor)/i,
+'Renewal and term':/\b(renew|term of|runs for|expiry)/i,
+'Warranty':/\b(warrant|represent)/i,
+'Force majeure':/\bforce majeure\b/i,
+'Services':/\b(deliver|services described|scope of)/i
+};
+const RISKS=[
+[/unlimited/i,'Unlimited liability',3,'No cap on how much one side may owe.'],
+[/without (?:prior )?notice/i,'Termination without notice',3,'The agreement can end suddenly.'],
+[/sole discretion/i,'Sole discretion',2,'One party decides alone, with no objective test.'],
+[/automatically renew|auto-?renew/i,'Auto-renewal',2,'You stay bound unless you cancel in time.'],
+[/non-?compete|shall not provide similar services/i,'Non-compete',2,'Limits who else you can work with.'],
+[/indemnif/i,'Indemnity',2,'You may have to cover the other side’s losses.'],
+[/penalty|liquidated damages/i,'Penalty',2,'Extra charges apply for lateness or breach.'],
+[/irrevocabl|perpetual/i,'Irrevocable or perpetual right',2,'Hard to undo once granted.'],
+[/waive/i,'Waiver of rights',2,'A legal right is given up.'],
+[/as is|without warranty/i,'No warranty',1,'No promise about quality.'],
+[/exclusive jurisdiction/i,'Exclusive jurisdiction',1,'Disputes must be handled in one court.']
+];
+const STOP=new Set('the a an and or of to in on for by with as at is are be this that it its any all each such shall will may must not from under upon into than then also which who whom their there'.split(' '));
+
+function sentences(t){const out=[];t.split(/\n+/).forEach(l=>{l=l.trim();if(!l)return;let buf='';l.split(/(?<=[.!?])\s+(?=[A-Z“"(0-9])/).forEach(p=>{buf=buf?buf+' '+p:p;if(!/(\b(?:Ltd|Pvt|Inc|Corp|Co|No|Mr|Ms|Dr|Rs|vs)\.|^\d+\.)$/.test(buf)){out.push(buf);buf=''}});if(buf)out.push(buf)});return out}
+
+function analyze(text){
+  const sents=sentences(text);
+  let spans=[];
+  ENT.forEach(([type,re])=>{for(const m of text.matchAll(re))spans.push({s:m.index,e:m.index+m[0].length,type,v:m[0].trim()})});
+  for(const m of text.matchAll(/\(the\s+[“"]([^”"]+)[”"]\)/g)){const i=m.index+m[0].indexOf(m[1]);spans.push({s:i,e:i+m[1].length,type:'party',v:m[1]})}
+  RISKS.forEach(r=>{const re=new RegExp(r[0].source,'gi');for(const m of text.matchAll(re))spans.push({s:m.index,e:m.index+m[0].length,type:'risk',v:m[0]})});
+  spans.sort((a,b)=>a.s-b.s||(b.e-b.s)-(a.e-a.s));
+  const keep=[];let last=0;spans.forEach(x=>{if(x.s>=last){keep.push(x);last=x.e}});
+  const ents={};keep.filter(x=>x.type!=='risk').forEach(x=>{const k=x.v.replace(/\s+/g,' ');(ents[x.type]=ents[x.type]||{})[k]=(ents[x.type][k]||0)+1});
+  const roles=Object.keys(ents.party||{});
+  const clauses=[];
+  sents.forEach((s,i)=>{if(s.split(' ').length<4)return;for(const k in CLAUSES)if(CLAUSES[k].test(s)){clauses.push({k,s,i});break}});
+  const obl=[];
+  sents.forEach(s=>{const m=s.match(/\b(shall not|must not|shall|must|agrees? to|is required to|undertakes?|will)\b/i);if(!m)return;
+    const actor=roles.find(r=>s.includes(r))||'Not stated';
+    const due=(s.match(/\b\d+(?:-|\s)(?:day|week|month|year)s?\b/i)||s.match(new RegExp(`\\b\\d{1,2}\\s+${M},?\\s+\\d{4}`,'i'))||[''])[0];
+    obl.push({s,actor,ban:/not/i.test(m[0]),due})});
+  const risks=[];
+  sents.forEach(s=>RISKS.forEach(r=>{if(r[0].test(s))risks.push({s,label:r[1],sev:r[2],why:r[3]})}));
+  const score=Math.min(100,risks.reduce((a,r)=>a+(r.sev===3?18:r.sev===2?10:4),0));
+  const freq={};text.toLowerCase().match(/[a-z]{3,}/g)?.forEach(w=>{if(!STOP.has(w))freq[w]=(freq[w]||0)+1});
+  const ranked=sents.map((s,i)=>{const w=s.toLowerCase().match(/[a-z]{3,}/g)||[];if(w.length<6)return{i,sc:-1,s};
+    let sc=w.reduce((a,x)=>a+(freq[x]||0),0)/Math.sqrt(w.length);
+    if(Object.values(CLAUSES).some(r=>r.test(s)))sc*=1.3;if(/\d/.test(s))sc*=1.15;return{i,sc,s}}).sort((a,b)=>b.sc-a.sc).slice(0,4).sort((a,b)=>a.i-b.i);
+  return{text,sents,spans:keep,ents,clauses,obl,risks,score,summary:ranked.map(r=>r.s)};
+}
+
+let R=null,tab='clauses';
+function render(r){
+  R=r;$('#res').style.display='block';
+  const lvl=r.score>=60?'High risk':r.score>=30?'Moderate risk':'Low risk';
+  $('#score').textContent=r.score+' / 100';$('#level').textContent=lvl;
+  requestAnimationFrame(()=>$('#arc').setAttribute('stroke-dasharray',(r.score/100*327)+' 327'));
+  const ec=Object.values(r.ents).reduce((a,o)=>a+Object.keys(o).length,0);
+  $('#stats').innerHTML=[[r.text.split(/\s+/).filter(Boolean).length,'Words'],[r.sents.length,'Sentences'],[r.clauses.length,'Clauses'],[ec,'Entities'],[r.obl.length,'Duties'],[r.risks.length,'Flags']].map(x=>`<div><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');
+  $('#sum').innerHTML=r.summary.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>Not enough text to summarize.</li>';
+  const T={clauses:'Key clauses',entities:'Entities',obligations:'Obligations',risks:'Attention areas'};
+  $('#tabs').innerHTML=Object.keys(T).map(k=>`<button role="tab" data-t="${k}" aria-selected="${k===tab}">${T[k]}</button>`).join('');
+  $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render(R)});
+  let h='';
+  if(tab==='clauses')h=r.clauses.map(c=>`<div class="item"><span class="tag">${c.k}</span><q>${esc(c.s)}</q></div>`).join('');
+  if(tab==='entities')h=Object.keys(r.ents).map(t=>`<div class="item"><b>${LABEL[t]}</b><div class="chips">${Object.entries(r.ents[t]).map(([v,n])=>`<span><mark class="t-${t}">${esc(v)}${n>1?' ×'+n:''}</mark></span>`).join('')}</div></div>`).join('');
+  if(tab==='obligations')h=r.obl.map(o=>`<div class="item"><span class="tag">${esc(o.actor)}</span><span class="tag">${o.ban?'Must not':'Must do'}</span>${o.due?`<span class="tag">${esc(o.due)}</span>`:''}<q>${esc(o.s)}</q></div>`).join('');
+  if(tab==='risks')h=[...r.risks].sort((a,b)=>b.sev-a.sev).map(x=>`<div class="item"><span class="tag ${'_lmh'[x.sev]}">${['','Low','Medium','High'][x.sev]}</span><b>${x.label}</b> – ${x.why}<q>${esc(x.s)}</q></div>`).join('');
+  $('#panel').innerHTML=h||'<p style="margin:0;color:var(--mu)">Nothing found in this category.</p>';
+  let o='',p=0;r.spans.forEach(x=>{o+=esc(r.text.slice(p,x.s))+`<mark class="t-${x.type}">${esc(r.text.slice(x.s,x.e))}</mark>`;p=x.e});
+  $('#doc').innerHTML=o+esc(r.text.slice(p));
+}
+
+const STEPS=['Read text','Clean','Split sentences','Find entities','Match clauses','Score risks','Summarize'];
+async function run(){
+  const t=$('#txt').value.trim();
+  if(t.split(/\s+/).length<15){$('#msg').textContent='Add at least a few sentences of text to analyze.';return}
+  $('#msg').textContent='';const pipe=$('#pipe');pipe.innerHTML=STEPS.map(s=>`<span>${s}</span>`).join('');
+  const sp=[...pipe.children];
+  for(const el of sp){el.classList.add('on');await new Promise(r=>setTimeout(r,matchMedia('(prefers-reduced-motion:reduce)').matches?0:170))}
+  try{const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});if(!res.ok)throw 0;render(await res.json());$('#res').scrollIntoView({behavior:'smooth',block:'start'})}catch(e){$('#msg').textContent='The analysis server did not respond. Check that python app.py is running.'}
+}
+function load(f){
+  if(!f)return;const fd=new FormData();fd.append('file',f);$('#msg').textContent='Reading '+f.name+'…';
+  fetch('/api/extract',{method:'POST',body:fd}).then(r=>r.json()).then(j=>{if(j.error){$('#msg').textContent=j.error;return}$('#txt').value=j.text;$('#msg').textContent='Loaded '+f.name;run()}).catch(()=>{$('#msg').textContent='Could not read the file. Check that python app.py is running.'});
+}
+$('#go').onclick=run;
+$('#sample').onclick=()=>{$('#txt').value=SAMPLE;run()};
+$('#heroSample').onclick=()=>{$('#txt').value=SAMPLE;setTimeout(run,400)};
+$('#clear').onclick=()=>{$('#txt').value='';$('#res').style.display='none';$('#pipe').innerHTML='';$('#msg').textContent=''};
+$('#file').onchange=e=>load(e.target.files[0]);
+const dz=$('#drop');
+dz.onclick=e=>{if(e.target.tagName!=='LABEL'&&e.target.tagName!=='U')$('#file').click()};
+['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('on')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('on')}));
+dz.addEventListener('drop',e=>load(e.dataTransfer.files[0]));
+$('#copy').onclick=async()=>{
+  if(!R)return;
+  const t=['RISK SCORE: '+R.score+'/100','','SUMMARY',...R.summary,'','FLAGS',...R.risks.map(x=>'- '+x.label+': '+x.s),'','DUTIES',...R.obl.map(o=>'- '+o.actor+': '+o.s)].join('\n');
+  try{await navigator.clipboard.writeText(t);$('#copy').textContent='Copied'}catch(e){$('#copy').textContent='Copy blocked: select the text manually'}
+  setTimeout(()=>$('#copy').textContent='Copy report',2200);
+};
+
+/* 3D hero: orbiting contract pages with a scanning ring */
+(function(){
+  if(!window.THREE)return;
+  const el=$('#scene');let ren;
+  try{ren=new THREE.WebGLRenderer({canvas:el,antialias:true,alpha:true})}catch(e){return}
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,1,.1,50);cam.position.set(0,0,8);
+  const cols=['#14b8a6','#f59e0b','#22c55e','#8b5cf6','#ef4444'];
+  function tex(seed){const c=document.createElement('canvas');c.width=256;c.height=340;const g=c.getContext('2d');g.fillStyle='#f7f8fc';g.fillRect(0,0,256,340);g.fillStyle='#14183a';g.fillRect(24,26,110,10);
+    for(let i=0;i<15;i++){const y=60+i*18,w=150+((i*37+seed*53)%70);g.fillStyle='#c9cee0';g.fillRect(24,y,w,6);if((i+seed)%4===0){g.fillStyle=cols[(i+seed)%5]+'99';g.fillRect(24+((i*29)%60),y-2,64,10)}}
+    return new THREE.CanvasTexture(c)}
+  const grp=new THREE.Group();scene.add(grp);grp.rotation.x=.22;
+  const N=7;
+  for(let i=0;i<N;i++){const a=i/N*Math.PI*2;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(1.7,2.26),new THREE.MeshBasicMaterial({map:tex(i),side:THREE.DoubleSide}));
+    m.position.set(Math.cos(a)*2.7,(i%3-1)*.45,Math.sin(a)*2.7);m.rotation.y=Math.PI/2-a;grp.add(m)}
+  const ring=new THREE.Mesh(new THREE.RingGeometry(2,3.5,72),new THREE.MeshBasicMaterial({color:0x7c82ff,transparent:true,opacity:.38,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));
+  ring.rotation.x=-Math.PI/2;grp.add(ring);
+  const pg=new THREE.BufferGeometry(),pa=new Float32Array(240*3);for(let i=0;i<pa.length;i++)pa[i]=(Math.random()-.5)*14;
+  pg.setAttribute('position',new THREE.BufferAttribute(pa,3));scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0x9aa1ff,size:.03})));
+  let mx=0,my=0,tx=0,ty=0;
+  addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+  function size(){const w=el.clientWidth,h=el.clientHeight;ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
+    const wide=w>900;grp.position.x=wide?2.6:0;grp.position.y=wide?0:-1.4;grp.scale.setScalar(wide?1:.7);if(!wide){grp.position.y=-1.6}}
+  addEventListener('resize',size);size();
+  const still=matchMedia('(prefers-reduced-motion:reduce)').matches;let t=0;
+  function loop(){t+=.016;tx+=(mx-tx)*.05;ty+=(my-ty)*.05;
+    grp.rotation.y=t*.18+tx*.8;grp.rotation.x=.22+ty*.4;ring.position.y=Math.sin(t*.9)*1.3;
+    ren.render(scene,cam);if(!still)requestAnimationFrame(loop)}
+  loop();
+})();
+</script>
+</body>
+</html>
